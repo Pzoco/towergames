@@ -16,7 +16,7 @@ public class TowerGameActivity extends AndroidApplication {
         config.useAccelerometer = false;
         config.useCompass = false;
         config.useWakelock = false;
-        config.useGL20 = true;
+        config.useGL20 = false;
         initialize(new TowerGame(),config);
     }
 }
