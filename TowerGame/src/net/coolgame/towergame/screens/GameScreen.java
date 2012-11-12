@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.coolgame.towergame.Card;
-import net.coolgame.towergame.Hand;
 import net.coolgame.towergame.Player;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
@@ -17,7 +17,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class GameScreen implements Screen
+public class GameScreen implements Screen, InputProcessor
 {
 
 	//For drawing etc
@@ -40,7 +40,6 @@ public class GameScreen implements Screen
 	
 	//Holds check of whose turn it is
 	private int _currentPlayerIndex = 0;
-	
 	
 	private int _startingPlayerIndex = 0;
 	
@@ -71,7 +70,12 @@ public class GameScreen implements Screen
 		// TODO Auto-generated method stub
 		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		_players.get(_currentPlayerIndex).hand.render(spriteBatch, shapeRenderer, bitmapFont);
+		
+		//Rendering the current player
+		_players.get(_currentPlayerIndex).render(spriteBatch, shapeRenderer, bitmapFont);
+		
+		
+		//Checking if the current play discarded a card or played one
 		if(_players.get(_currentPlayerIndex).getDiscardedCard() != null)
 		{
 			_discardPile.add(_players.get(_currentPlayerIndex).getDiscardedCard());
@@ -84,6 +88,8 @@ public class GameScreen implements Screen
 			_currentPlayerIndex++;
 			
 		}
+		
+		//Both players have done their turns and a new turn begins
 		if(_currentPlayerIndex>1)
 		{
 			startNewTurn();
@@ -126,6 +132,50 @@ public class GameScreen implements Screen
 	public void dispose() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	//Input processor methods:
+	
+	@Override
+	public boolean keyDown(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean keyUp(int keycode) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean keyTyped(char character) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean touchDown(int x, int y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean touchUp(int x, int y, int pointer, int button) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean touchDragged(int x, int y, int pointer) 
+	{
+		_players.get(_currentPlayerIndex).touchDragged(x, y, pointer);
+		return false;
+	}
+	@Override
+	public boolean touchMoved(int x, int y) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean scrolled(int amount) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }

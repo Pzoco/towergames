@@ -1,7 +1,5 @@
 package net.coolgame.towergame;
 
-import org.omg.CORBA._PolicyStub;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -43,6 +41,10 @@ public class Card
 		shapeRenderer.begin(ShapeType.FilledRectangle);
 		shapeRenderer.setColor(Color.GRAY);
 		shapeRenderer.filledRect(position.x, position.y, _width,_height);
+		shapeRenderer.end();
+		shapeRenderer.begin(ShapeType.Rectangle);
+		shapeRenderer.setColor(Color.BLUE);
+		shapeRenderer.rect(position.x, position.y, _width, _height);
 		shapeRenderer.end();
 		shapeRenderer.begin(ShapeType.FilledRectangle);
 		shapeRenderer.setColor(Color.BLACK);
