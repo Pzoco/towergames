@@ -5,11 +5,12 @@ import java.util.Random;
 
 import net.coolgame.towergame.Card;
 import net.coolgame.towergame.Player;
+import net.coolgame.towergame.TextureRegistry;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -24,7 +25,7 @@ public class GameScreen implements Screen, InputProcessor
 	private ShapeRenderer shapeRenderer;
 	private SpriteBatch spriteBatch;
 	private BitmapFont bitmapFont;
-	private Camera camera;
+	private OrthographicCamera camera;
 	
 	//For getting random numbers
 	private Random random = new Random();
@@ -49,9 +50,12 @@ public class GameScreen implements Screen, InputProcessor
 	public GameScreen(ArrayList<Player> players,int controllingPlayerIndex)
 	{
 		shapeRenderer = new ShapeRenderer();
+		TextureRegistry.LoadTextures();
 		spriteBatch = new SpriteBatch();
-		camera = new OrthographicCamera(800,480);
-		camera.position.set(800/2,400/2,0f);
+		camera = new OrthographicCamera(Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+		camera.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera.position.set(0,0,0);
+		camera.update();
 		bitmapFont = new BitmapFont();
 		_players = players;
 		for(Player player : players)
@@ -68,9 +72,9 @@ public class GameScreen implements Screen, InputProcessor
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
-		Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+		Gdx.gl.glClearColor(0.1f, 0.5f, 0.1f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
+		Gdx.gl.glDisable(GL10.GL_CULL_FACE);
 		//Rendering the current player
 		_players.get(_currentPlayerIndex).render(spriteBatch, shapeRenderer, bitmapFont);
 		
@@ -94,6 +98,11 @@ public class GameScreen implements Screen, InputProcessor
 		{
 			startNewTurn();
 		}
+		
+		spriteBatch.begin();
+		bitmapFont.setScale(2);
+		bitmapFont.draw(spriteBatch, "HELLO", 0,0);
+		spriteBatch.end();
 	}
 	public void startNewTurn()
 	{
@@ -107,7 +116,7 @@ public class GameScreen implements Screen, InputProcessor
 
 	@Override
 	public void show() {
-		
+		Gdx.input.setInputProcessor(this);
 	}
 
 	@Override
@@ -153,8 +162,8 @@ public class GameScreen implements Screen, InputProcessor
 	}
 	@Override
 	public boolean touchDown(int x, int y, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
+		_players.get(_currentPlayerIndex).touchDown(x,Gdx.graphics.getHeight()-y,pointer,button);
+		return true;
 	}
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
@@ -164,8 +173,8 @@ public class GameScreen implements Screen, InputProcessor
 	@Override
 	public boolean touchDragged(int x, int y, int pointer) 
 	{
-		_players.get(_currentPlayerIndex).touchDragged(x, y, pointer);
-		return false;
+		_players.get(_currentPlayerIndex).touchDragged(x, Gdx.graphics.getHeight()-y, pointer);
+		return true;
 	}
 	@Override
 	public boolean touchMoved(int x, int y) {

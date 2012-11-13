@@ -8,6 +8,6 @@ public class TowerGameDesktop
 {
 	public static void main(String[] args) 
 	{
-		new LwjglApplication(new TowerGame(), "Tower Game",1280,800,true);
+		new LwjglApplication(new TowerGame(), "Tower Game",800,480,true);
 	}
 }
