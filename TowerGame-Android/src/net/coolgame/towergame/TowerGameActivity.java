@@ -5,8 +5,6 @@ package net.coolgame.towergame;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
-import android.os.Bundle;
-
 public class TowerGameActivity extends AndroidApplication {
 
     @Override
@@ -16,7 +14,7 @@ public class TowerGameActivity extends AndroidApplication {
         config.useAccelerometer = false;
         config.useCompass = false;
         config.useWakelock = false;
-        config.useGL20 = false;
+        config.useGL20 = true;
         initialize(new TowerGame(),config);
     }
 }

@@ -30,4 +30,10 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>data</name>
+			<value>file:/D:/Dokumenter/Programmering/Java/TowerGameForAndroid/TowerGame/data</value>
+		</variable>
+	</variableList>
 </projectDescription>
