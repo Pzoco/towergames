@@ -14,4 +14,21 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>data/buttons</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TowerGame-Android/assets/buttons</locationURI>
+		</link>
+		<link>
+			<name>data/cards-picture</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TowerGame-Android/assets/cards-picture</locationURI>
+		</link>
+		<link>
+			<name>data/fonts</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/TowerGame-Android/assets/fonts</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
