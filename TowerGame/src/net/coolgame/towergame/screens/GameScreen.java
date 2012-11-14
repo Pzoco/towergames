@@ -176,13 +176,14 @@ public class GameScreen implements Screen, InputProcessor
 		_players.get(_currentPlayerIndex).touchDragged(x, Gdx.graphics.getHeight()-y, pointer);
 		return true;
 	}
+
 	@Override
-	public boolean touchMoved(int x, int y) {
+	public boolean scrolled(int amount) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 	@Override
-	public boolean scrolled(int amount) {
+	public boolean mouseMoved(int screenX, int screenY) {
 		// TODO Auto-generated method stub
 		return false;
 	}
