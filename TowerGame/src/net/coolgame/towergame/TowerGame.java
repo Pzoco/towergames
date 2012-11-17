@@ -35,9 +35,8 @@ public class TowerGame extends Game
 		deck2.addCard(new Card(4,4,"Man","attacks"));
 		deck2.addCard(new Card(10,1,"Win game","Not really lol"));
 		deck2.addCard(new Card(1,0,"Man","attacks"));
-
-		Player player1 = new Player(deck1, 20);
-		Player player2 = new Player(deck2,20);
+		Player player1 = new Player(deck1, 20,0);
+		Player player2 = new Player(deck2,20,1);
 		ArrayList<Player> players = new ArrayList<Player>();
 		players.add(player1);
 		players.add(player2);
