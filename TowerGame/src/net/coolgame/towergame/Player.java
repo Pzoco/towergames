@@ -3,6 +3,7 @@ package net.coolgame.towergame;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -11,6 +12,10 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Player 
 {
+	public final int playerIndex;
+	public int towerX = 0;
+	public int towerY = 0;
+	public Color towerColor;
 	public Deck deck = new Deck();
 	private ArrayList<Card> _hand = new ArrayList<Card>();
 	private int _towerHealth = 0;
@@ -22,11 +27,27 @@ public class Player
 	
 	private Card _touchedCard = null;
 	private Card _shownCard = null;
+	private final int drawCardGap = 50;
 	
-	public Player(Deck deck,int towerHealth)
+	
+	
+	public Player(Deck deck,int towerHealth,int playerIndex)
 	{
 		this.deck = deck;
 		_towerHealth = towerHealth;
+		this.playerIndex = playerIndex;
+		if(playerIndex == 0)
+		{
+			towerX = 100;
+			towerY = 100;
+			towerColor = Color.RED;
+		}
+		else	
+		{
+			towerX = Gdx.graphics.getWidth()-100-44;
+			towerY = 100;
+			towerColor = Color.BLUE;
+		}
 	}
 	
 
@@ -58,24 +79,25 @@ public class Player
 			{
 				if((Card)_hand.get(i)!= _touchedCard)
 				{
-					_hand.get(i).render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*40+40*i,50));
+					_hand.get(i).render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*i,50));
 				}
 			}
 			for(int j = _hand.size()-1;j>_hand.indexOf(_touchedCard);j--)
 			{
 				if((Card)_hand.get(j)!= _touchedCard)
 				{
-					_hand.get(j).render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*40+40*j,50));
+					_hand.get(j).render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*j+_hand.get(j).GetWidth()/2,50));
 				}
 			}
 			
-			_touchedCard.render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*40+40*_hand.indexOf(_touchedCard),50));
+			_touchedCard.render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*_hand.indexOf(_touchedCard),50));
 		}
 		else	
 		{
 			//Only show the card that is selected right now, so the player won't get as confused.
-			_shownCard.render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_shownCard.GetWidth()/2,50));
+			_shownCard.render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-(_shownCard.GetWidth()*_shownCard.scale)/2,50));
 		}
+
 	}
 	
 
@@ -93,7 +115,7 @@ public class Player
 			if(i<_hand.indexOf(_touchedCard))
 			{
 				if(currentCard.position.x< x && currentCard.position.y <y &&
-						currentCard.position.x+40>x && 
+						currentCard.position.x+drawCardGap>x && 
 						currentCard.position.y+currentCard.GetHeight()*currentCard.scale>y)
 				{
 					_touchedCard = currentCard;
@@ -102,7 +124,7 @@ public class Player
 			}
 			else if(i>_hand.indexOf(_touchedCard))
 			{
-				if(currentCard.position.x+currentCard.GetWidth()*currentCard.scale-40< x && currentCard.position.y <y &&
+				if(currentCard.position.x+currentCard.GetWidth()*currentCard.scale-drawCardGap< x && currentCard.position.y <y &&
 						currentCard.position.x+currentCard.GetWidth()*currentCard.scale>x && 
 						currentCard.position.y+currentCard.GetHeight()*currentCard.scale>y)
 				{
@@ -125,24 +147,24 @@ public class Player
 				if(i<_hand.indexOf(_touchedCard))
 				{
 					if(currentCard.position.x< x && currentCard.position.y <y &&
-							currentCard.position.x+40>x && 
+							currentCard.position.x+drawCardGap>x && 
 							currentCard.position.y+currentCard.GetHeight()*currentCard.scale>y)
 					{
 						_touchedCard = currentCard;
 						_shownCard = currentCard;
-						currentCard.scale = 1f;
+						currentCard.scale = currentCard.focusedScale;
 						return;
 					}
 				}
 				else if(i>_hand.indexOf(_touchedCard))
 				{
-					if(currentCard.position.x+currentCard.GetWidth()*currentCard.scale-40< x && currentCard.position.y <y &&
+					if(currentCard.position.x+currentCard.GetWidth()*currentCard.scale-drawCardGap< x && currentCard.position.y <y &&
 							currentCard.position.x+currentCard.GetWidth()*currentCard.scale>x && 
 							currentCard.position.y+currentCard.GetHeight()*currentCard.scale>y)
 					{
 						_touchedCard = currentCard;
 						_shownCard = currentCard;
-						currentCard.scale = 1f;
+						currentCard.scale = currentCard.focusedScale;
 						return;
 					}
 				}
@@ -150,14 +172,14 @@ public class Player
 			if(_touchedCard.containsPoint(x, y))
 			{
 				_shownCard = _touchedCard;
-				_shownCard.scale = 1f;
+				_shownCard.scale = _shownCard.focusedScale;
 			}
 		}
 		else
 		{
 			if(!_shownCard.containsPoint(x, y))
 			{
-				_shownCard.scale = 0.5f;
+				_shownCard.scale = 1f;
 				_shownCard = null;
 			}
 		}

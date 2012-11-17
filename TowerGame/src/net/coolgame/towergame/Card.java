@@ -22,7 +22,8 @@ public class Card
 	public int GetWidth(){return _width;}
 	public int GetHeight(){return _height;}
 	
-	public float scale = 0.5f;
+	public float scale = 1f;
+	public float focusedScale = 1.5f;
 	
 	
 	public Card(int cost, int rounds, String title, String description)

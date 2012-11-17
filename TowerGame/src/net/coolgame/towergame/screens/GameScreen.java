@@ -12,6 +12,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -77,7 +78,7 @@ public class GameScreen implements Screen, InputProcessor
 		Gdx.gl.glDisable(GL10.GL_CULL_FACE);
 		//Rendering the current player
 		_players.get(_currentPlayerIndex).render(spriteBatch, shapeRenderer, bitmapFont);
-		
+		renderStats();
 		
 		//Checking if the current play discarded a card or played one
 		if(_players.get(_currentPlayerIndex).getDiscardedCard() != null)
@@ -114,6 +115,23 @@ public class GameScreen implements Screen, InputProcessor
 		
 	}
 
+	private void renderStats()
+	{
+		spriteBatch.begin();
+		for(int index = 0;index<2;index++)
+		{
+			for(int i = 0;i<_players.get(index).getTowerHealth();i++)
+			{
+				spriteBatch.draw(TextureRegistry.textures.get("towerpiece"), _players.get(index).towerX, _players.get(index).towerY+i*8);
+			}
+			spriteBatch.setColor(_players.get(index).towerColor);
+			spriteBatch.draw(TextureRegistry.textures.get("towertop"),_players.get(index).towerX-6,_players.get(index).towerY+_players.get(index).getTowerHealth()*8);
+			spriteBatch.setColor(Color.WHITE);
+		}
+		spriteBatch.end();
+	}
+	
+	
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(this);
