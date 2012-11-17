@@ -15,9 +15,10 @@ function addUser($username, $password){
 	$query = mysql_query("SELECT name FROM users WHERE name='$username'") or die('Error, query failed');
 
 	if(mysql_num_rows($query) < 1) {
-		mysql_query("INSERT INTO users (name, password, created)
-					VALUES('$username','$password', CURDATE()") or die('Error, query failed!');
-	}	
+		mysql_query("INSERT INTO users (name, password, created, point, credit)
+					VALUES('$username','$password', CURDATE(), 0, 0") or die('Error, query failed!');
+	}
+}	
 
 function login($username, $password){
 	

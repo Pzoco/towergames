@@ -11,10 +11,38 @@ public class PostHandler {
 	
 	public PostHandler(){
 	}
+
+	static String targetURL = "http://towergame.thoeisen.dk";
+	private String cookies = null;
+	protected String readCookies(HttpURLConnection con) {
+		StringBuilder cookieBuffer = null;
+		String        cookieField  = null;
+		String        headerName   = null;
+	 
+		for (int i = 1; (headerName = con.getHeaderFieldKey(i)) != null; i++) {
+			if (headerName.toLowerCase().equals("HTTP_HEADER_SET_COOKIE")) {
+				cookieField = con.getHeaderField(i);
+				cookieField = cookieField.substring(0, 
+					cookieField.indexOf(";"));
+	 
+				if (cookieBuffer != null) {
+					cookieBuffer.append("; ");
+				} else {
+					cookieBuffer = new StringBuilder();
+				}
+				cookieBuffer.append(cookieField);
+			}
+		}
+	 
+		if (cookieBuffer != null) {
+			return cookieBuffer.toString();
+		} else {
+			return null;
+		}
+	}
 	
 	
-	
-	public static String excutePost(String targetURL, String urlParameters)
+	public String excutePost(String urlParameters)
 	  {
 	    URL url;
 	    HttpURLConnection connection = null;  
@@ -44,6 +72,10 @@ public class PostHandler {
 	      //Get Response	
 	      InputStream is = connection.getInputStream();
 	      BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+	      String cookies = readCookies(connection);
+	      if (cookies != null){
+	    	  this.cookies=cookies;
+	      }
 	      String line;
 	      StringBuffer response = new StringBuffer(); 
 	      while((line = rd.readLine()) != null) {
@@ -67,7 +99,21 @@ public class PostHandler {
 	  }
 	
 	
-	
+	public static String login(String username, String password){
+		
+		PostHandler PH = new PostHandler();
+		String accepted = PH.excutePost("username="+username+"&password="+password);
+		
+		if (accepted == "success"){
+			
+		}else{
+			
+		}
+		
+		
+		return "lol";
+		
+	}
 	
 	
 	

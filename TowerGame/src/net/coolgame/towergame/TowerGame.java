@@ -6,6 +6,8 @@ import net.coolgame.towergame.screens.GameScreen;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class TowerGame extends Game
 {
@@ -18,6 +20,7 @@ public class TowerGame extends Game
 	}
 	private GameScreen InitializeTestGameScreen()
 	{
+
 		Deck deck1 = new Deck();
 		deck1.addCard(new Card(10,2,"Win game","Not really lol"));
 		deck1.addCard(new Card(4,3,"Man","attacks"));
@@ -32,6 +35,7 @@ public class TowerGame extends Game
 		deck2.addCard(new Card(4,4,"Man","attacks"));
 		deck2.addCard(new Card(10,1,"Win game","Not really lol"));
 		deck2.addCard(new Card(1,0,"Man","attacks"));
+
 		Player player1 = new Player(deck1, 20);
 		Player player2 = new Player(deck2,20);
 		ArrayList<Player> players = new ArrayList<Player>();
