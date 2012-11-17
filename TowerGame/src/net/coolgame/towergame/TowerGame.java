@@ -4,10 +4,7 @@ import java.util.ArrayList;
 
 import net.coolgame.towergame.screens.GameScreen;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class TowerGame extends Game
 {
