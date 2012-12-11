@@ -12,6 +12,7 @@ public class TextureRegistry
 	public static void LoadTextures()
 	{
 		textures.put("cardtemplate",new Texture(Gdx.files.internal("cards-picture/cardtemplate.png")));
+		textures.put("cardback",new Texture(Gdx.files.internal("cards-picture/cardback.png")));
 		textures.put("playcardbutton", new Texture(Gdx.files.internal("buttons/playcard.png")));
 		textures.put("discardcardbutton", new Texture(Gdx.files.internal("buttons/discardcard.png")));
 		textures.put("towerpiece", new Texture(Gdx.files.internal("other/towerpiece.png")));

@@ -2,35 +2,49 @@ package net.coolgame.towergame;
 
 import java.util.ArrayList;
 
+import net.coolgame.towergame.screens.GameScreen;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 
 public class Player 
 {
+	//
+	// FIELDS
+	//
 	public final int playerIndex;
-	public int towerX = 0;
-	public int towerY = 0;
+	private Vector2 _towerPosition;
+	private Vector2 _discardpilePosition;
+	private Vector2 _facedownCardsPosition;
+	
+	private int _gold = 100;
 	public Color towerColor;
+	
 	public Deck deck = new Deck();
 	private ArrayList<Card> _hand = new ArrayList<Card>();
+	private ArrayList<Card> _facedownCards = new ArrayList<Card>();
+	private ArrayList<Card> _discardPile = new ArrayList<Card>();
+	
 	private int _towerHealth = 0;
 	public int getTowerHealth(){return _towerHealth;}
-	private Card _playedCard;
-	public Card getPlayedCard(){return _playedCard;}
-	private Card _discardedCard;
-	public Card getDiscardedCard(){return _discardedCard;}
 	
 	private Card _touchedCard = null;
 	private Card _shownCard = null;
 	private final int drawCardGap = 50;
 	
+	public Boolean hasTurn = false;
+	public Boolean hasFinishedTurn = false;
 	
+	Button _discardCardButton = new Button(new Vector2(Gdx.graphics.getWidth()/2-2*164,Gdx.graphics.getHeight()/2),164,48,"discardcardbutton");
+	Button _playCardButton = new Button(new Vector2(Gdx.graphics.getWidth()/2+164,Gdx.graphics.getHeight()/2),164,48,"playcardbutton");
 	
+	//
+	// CONSTRUCTOR
+	//
 	public Player(Deck deck,int towerHealth,int playerIndex)
 	{
 		this.deck = deck;
@@ -38,19 +52,23 @@ public class Player
 		this.playerIndex = playerIndex;
 		if(playerIndex == 0)
 		{
-			towerX = 100;
-			towerY = 100;
+			_towerPosition = new Vector2(6+44,10);
+			_facedownCardsPosition = new Vector2(10,Gdx.graphics.getHeight()-100);
+			_discardpilePosition = new Vector2(10,Gdx.graphics.getHeight()-300);
 			towerColor = Color.RED;
 		}
 		else	
 		{
-			towerX = Gdx.graphics.getWidth()-100-44;
-			towerY = 100;
+			_towerPosition = new Vector2(Gdx.graphics.getWidth()-38-44,10);
+			_facedownCardsPosition = new Vector2(Gdx.graphics.getWidth()-50*3,Gdx.graphics.getHeight()-100);
+			_discardpilePosition = new Vector2(Gdx.graphics.getWidth()-10-200*0.4f,Gdx.graphics.getHeight()-300);
 			towerColor = Color.BLUE;
 		}
 	}
 	
-
+	//
+	// GAME ACTIONS
+	//
 	public void drawCards(int amount)
 	{
 		int drawCount = amount;
@@ -67,9 +85,40 @@ public class Player
 			_touchedCard = _hand.get(_hand.size()-1);
 		}
 	}
-	
-	
-	public void render(SpriteBatch spriteBatch,ShapeRenderer shapeRenderer,BitmapFont font)
+	public void updateWaitingCards() 
+	{
+		ArrayList<Card> invokedCards = new ArrayList<Card>();
+		for(Card card : _facedownCards)
+		{
+			card.rounds--;
+			if(card.rounds <=0)
+			{
+				GameScreen.invokeCard(card);
+				invokedCards.add(card);
+			}
+		}
+		for(Card card : invokedCards)
+		{
+			_facedownCards.remove(card);
+			_discardPile.add(card);
+		}
+		
+	}
+	//
+	// RENDERING
+	//
+	public void render(SpriteBatch spriteBatch,BitmapFont font)
+	{
+		font.draw(spriteBatch, "Gold: "+_gold, _facedownCardsPosition.x, _facedownCardsPosition.y+80);
+		renderTower(spriteBatch,font);
+		renderDiscardPile(spriteBatch, font);
+		renderFacedownCards(spriteBatch);
+		if(hasTurn)
+		{
+			renderHand(spriteBatch,font);
+		}		
+	}
+	private void renderHand(SpriteBatch spriteBatch,BitmapFont font)
 	{
 		if(_shownCard == null)
 		{
@@ -79,28 +128,70 @@ public class Player
 			{
 				if((Card)_hand.get(i)!= _touchedCard)
 				{
-					_hand.get(i).render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*i,50));
+					_hand.get(i).render(spriteBatch, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*i,50));
 				}
 			}
 			for(int j = _hand.size()-1;j>_hand.indexOf(_touchedCard);j--)
 			{
 				if((Card)_hand.get(j)!= _touchedCard)
 				{
-					_hand.get(j).render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*j+_hand.get(j).GetWidth()/2,50));
+					_hand.get(j).render(spriteBatch, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*j+_hand.get(j).GetWidth()/2,50));
 				}
 			}
 			
-			_touchedCard.render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*_hand.indexOf(_touchedCard),50));
+			_touchedCard.render(spriteBatch, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*_hand.indexOf(_touchedCard),50));
 		}
 		else	
 		{
 			//Only show the card that is selected right now, so the player won't get as confused.
-			_shownCard.render(spriteBatch, shapeRenderer, font, new Vector2(Gdx.graphics.getWidth()/2-(_shownCard.GetWidth()*_shownCard.scale)/2,50));
+			_shownCard.render(spriteBatch, font, new Vector2(Gdx.graphics.getWidth()/2-(_shownCard.GetWidth()*_shownCard.scale)/2,50));
+			if(_shownCard.GetCost()<=_gold && _facedownCards.size() <3)
+			{
+				_playCardButton.render(spriteBatch);
+			}
+			_discardCardButton.render(spriteBatch);
 		}
+	}
+	private void renderTower(SpriteBatch spriteBatch,BitmapFont font)
+	{
+		
+		for(int i = 0;i<_towerHealth;i++)
+		{
+			spriteBatch.draw(TextureRegistry.textures.get("towerpiece"), _towerPosition.x, _towerPosition.y+i*8);
+		}
+		spriteBatch.setColor(towerColor);
+		spriteBatch.draw(TextureRegistry.textures.get("towertop"),_towerPosition.x-6,  _towerPosition.y+_towerHealth*8);
+		font.draw(spriteBatch, "Health: "+_towerHealth,_towerPosition.x-20,  _towerPosition.y+_towerHealth*8+40);
+		spriteBatch.setColor(Color.WHITE);
+	}
+	private void renderDiscardPile(SpriteBatch spriteBatch, BitmapFont font)
+	{
+		font.draw(spriteBatch, "Discard Pile ", _discardpilePosition.x, _discardpilePosition.y+320*0.4f);
+		if(_discardPile.size()>0)
+		{
+			_discardPile.get(_discardPile.size()-1).scale = 0.4f;
+			_discardPile.get(_discardPile.size()-1).render(spriteBatch, font, _discardpilePosition);
+		}
+	}
+	private void renderFacedownCards(SpriteBatch spriteBatch)
+	{
+		for(int i = 0;i<_facedownCards.size();i++)
+		{
 
+				spriteBatch.draw(TextureRegistry.textures.get("cardback"), 
+				_facedownCardsPosition.x+50*i,  _facedownCardsPosition.y,
+				0,0,
+				200,285,
+				0.2f,0.2f,
+				0,0,0,
+				200,285,
+				false,false);
+		}
 	}
 	
-
+	//
+	// INPUT
+	//
 	public void touchDragged(int x, int y, int pointer) 
 	{
 		if(_shownCard != null)
@@ -134,8 +225,6 @@ public class Player
 			}
 		}
 	}
-
-
 	public void touchDown(int x, int y, int pointer, int button) 
 	{
 		if(_shownCard == null)
@@ -177,11 +266,32 @@ public class Player
 		}
 		else
 		{
-			if(!_shownCard.containsPoint(x, y))
+			if(_discardCardButton.contains(x, y))
+			{	
+				_discardPile.add(_shownCard);
+				_hand.remove(_shownCard);
+				_shownCard.scale = 1f;
+				_shownCard = null;
+				hasFinishedTurn = true;
+				_touchedCard = _hand.get(0);
+			}
+			else if(_playCardButton.contains(x,y) && _facedownCards.size() <3 && _gold >= _shownCard.GetCost())
+			{
+				_facedownCards.add(_shownCard);
+				_hand.remove(_shownCard);
+				_gold -=_shownCard.GetCost();
+				_shownCard.scale = 1f;
+				_shownCard = null;
+				_touchedCard = _hand.get(0);
+				hasFinishedTurn = true;
+			}
+			else if(!_shownCard.containsPoint(x, y))
 			{
 				_shownCard.scale = 1f;
 				_shownCard = null;
 			}
 		}
 	}
+
+	
 }
