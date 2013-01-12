@@ -169,7 +169,7 @@ public class Player
 		font.draw(spriteBatch, "Discard Pile ", _discardpilePosition.x, _discardpilePosition.y+320*0.4f);
 		if(_discardPile.size()>0)
 		{
-			_discardPile.get(_discardPile.size()-1).scale = 0.4f;
+			_discardPile.get(_discardPile.size()-1).scale = 0.6f;
 			_discardPile.get(_discardPile.size()-1).render(spriteBatch, font, _discardpilePosition);
 		}
 	}
@@ -270,20 +270,24 @@ public class Player
 			{	
 				_discardPile.add(_shownCard);
 				_hand.remove(_shownCard);
-				_shownCard.scale = 1f;
 				_shownCard = null;
 				hasFinishedTurn = true;
-				_touchedCard = _hand.get(0);
+				if(_hand.size()>0)
+				{
+					_touchedCard = _hand.get(0);
+				}
 			}
 			else if(_playCardButton.contains(x,y) && _facedownCards.size() <3 && _gold >= _shownCard.GetCost())
 			{
 				_facedownCards.add(_shownCard);
 				_hand.remove(_shownCard);
 				_gold -=_shownCard.GetCost();
-				_shownCard.scale = 1f;
 				_shownCard = null;
-				_touchedCard = _hand.get(0);
 				hasFinishedTurn = true;
+				if(_hand.size()>0)
+				{
+					_touchedCard = _hand.get(0);
+				}
 			}
 			else if(!_shownCard.containsPoint(x, y))
 			{
