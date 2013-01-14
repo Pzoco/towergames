@@ -117,7 +117,7 @@ public class Player
 	{
 		if(_moveToFacedown.position.x >_facedownCardsPosition.x)
 		{
-			_moveToFacedown.position.x-=10;
+			_moveToFacedown.position.x-=5;
 		}
 		else if(_moveToFacedown.position.x <_facedownCardsPosition.x)
 		{
@@ -149,7 +149,7 @@ public class Player
 		}
 		else if(_moveToDiscard.position.x <_discardpilePosition.x)
 		{
-			_moveToDiscard.position.x+=10;
+			_moveToDiscard.position.x+=15;
 		}
 		if(_moveToDiscard.position.y <_discardpilePosition.y)
 		{
