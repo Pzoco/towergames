@@ -42,6 +42,9 @@ public class Player
 	Button _discardCardButton = new Button(new Vector2(Gdx.graphics.getWidth()/2-2*164,Gdx.graphics.getHeight()/2),164,48,"discardcardbutton");
 	Button _playCardButton = new Button(new Vector2(Gdx.graphics.getWidth()/2+164,Gdx.graphics.getHeight()/2),164,48,"playcardbutton");
 	
+	private Card _moveToFacedown;
+	private Card _moveToDiscard;
+	
 	//
 	// CONSTRUCTOR
 	//
@@ -54,14 +57,14 @@ public class Player
 		{
 			_towerPosition = new Vector2(6+44,10);
 			_facedownCardsPosition = new Vector2(10,Gdx.graphics.getHeight()-100);
-			_discardpilePosition = new Vector2(10,Gdx.graphics.getHeight()-300);
+			_discardpilePosition = new Vector2(10,Gdx.graphics.getHeight()-250);
 			towerColor = Color.RED;
 		}
 		else	
 		{
 			_towerPosition = new Vector2(Gdx.graphics.getWidth()-38-44,10);
 			_facedownCardsPosition = new Vector2(Gdx.graphics.getWidth()-50*3,Gdx.graphics.getHeight()-100);
-			_discardpilePosition = new Vector2(Gdx.graphics.getWidth()-10-200*0.4f,Gdx.graphics.getHeight()-300);
+			_discardpilePosition = new Vector2(Gdx.graphics.getWidth()-10-100,Gdx.graphics.getHeight()-250);
 			towerColor = Color.BLUE;
 		}
 	}
@@ -99,11 +102,74 @@ public class Player
 		}
 		for(Card card : invokedCards)
 		{
+			card.scale(0.4f,true);
 			_facedownCards.remove(card);
 			_discardPile.add(card);
+			card.position = _discardpilePosition;
 		}
 		
 	}
+	
+	//
+	// CARD ANIMATION
+	//
+	private void drawMovingToFacedown()
+	{
+		if(_moveToFacedown.position.x >_facedownCardsPosition.x)
+		{
+			_moveToFacedown.position.x-=10;
+		}
+		else if(_moveToFacedown.position.x <_facedownCardsPosition.x)
+		{
+			_moveToFacedown.position.x+=10;
+		}
+		if(_moveToFacedown.position.y <_facedownCardsPosition.y)
+		{
+			_moveToFacedown.position.y+=10;
+		}
+		else if(_moveToFacedown.position.y <_facedownCardsPosition.y)
+		{
+			_moveToFacedown.position.y-=10;
+		}
+
+		if(_moveToFacedown.position.x ==_facedownCardsPosition.x && _moveToFacedown.position.y ==_facedownCardsPosition.y)
+		{
+			_moveToFacedown.position.x = _facedownCardsPosition.x;
+			_moveToFacedown.position.y = _facedownCardsPosition.y;
+			_facedownCards.add(_moveToFacedown);
+			_moveToFacedown = null;
+			hasFinishedTurn = true;
+		}
+	}
+	private void drawMovingToDiscard()
+	{
+		if(_moveToDiscard.position.x >_discardpilePosition.x)
+		{
+			_moveToDiscard.position.x-=10;
+		}
+		else if(_moveToDiscard.position.x <_discardpilePosition.x)
+		{
+			_moveToDiscard.position.x+=10;
+		}
+		if(_moveToDiscard.position.y <_discardpilePosition.y)
+		{
+			_moveToDiscard.position.y+=10;
+		}
+		else if(_moveToDiscard.position.y >_discardpilePosition.y)
+		{
+			_moveToDiscard.position.y-=10;
+		}
+		
+		if(_moveToDiscard.position.x ==_discardpilePosition.x && _moveToDiscard.position.y ==_discardpilePosition.y)
+		{
+			_moveToDiscard.position.x = _discardpilePosition.x;
+			_moveToDiscard.position.y = _discardpilePosition.y;
+			_discardPile.add(_moveToDiscard);
+			hasFinishedTurn = true;
+			_moveToDiscard = null;
+		}
+	}
+	
 	//
 	// RENDERING
 	//
@@ -113,15 +179,28 @@ public class Player
 		renderTower(spriteBatch,font);
 		renderDiscardPile(spriteBatch, font);
 		renderFacedownCards(spriteBatch);
-		if(hasTurn)
+		if(hasTurn && _shownCard == null)
 		{
 			renderHand(spriteBatch,font);
-		}		
+		}
+		else if(_shownCard != null)
+		{
+			renderCardInFocus(spriteBatch,font);
+		}
+		if(_moveToFacedown != null)
+		{
+			_moveToFacedown.render(spriteBatch, font, _moveToFacedown.position);
+			drawMovingToFacedown();		
+		}
+		else if(_moveToDiscard != null)
+		{
+			_moveToDiscard.render(spriteBatch, font, _moveToDiscard.position);
+			drawMovingToDiscard();
+		}
 	}
 	private void renderHand(SpriteBatch spriteBatch,BitmapFont font)
 	{
-		if(_shownCard == null)
-		{
+		
 			//Draws the hand - First the ones on the left side and right side of the touched card
 			//and finally the touched card, so its the top card.
 			for(int i = 0;i<_hand.indexOf(_touchedCard);i++)
@@ -140,17 +219,16 @@ public class Player
 			}
 			
 			_touchedCard.render(spriteBatch, font, new Vector2(Gdx.graphics.getWidth()/2-_hand.size()*drawCardGap+drawCardGap*_hand.indexOf(_touchedCard),50));
-		}
-		else	
+	}
+	private void renderCardInFocus(SpriteBatch spriteBatch,BitmapFont font)
+	{
+		//Only show the card that is selected right now, so the player won't get as confused.
+		_shownCard.render(spriteBatch, font, new Vector2(Gdx.graphics.getWidth()/2-(_shownCard.GetWidth()*_shownCard.scale)/2,50));
+		if(_shownCard.GetCost()<=_gold && _facedownCards.size() <3)
 		{
-			//Only show the card that is selected right now, so the player won't get as confused.
-			_shownCard.render(spriteBatch, font, new Vector2(Gdx.graphics.getWidth()/2-(_shownCard.GetWidth()*_shownCard.scale)/2,50));
-			if(_shownCard.GetCost()<=_gold && _facedownCards.size() <3)
-			{
-				_playCardButton.render(spriteBatch);
-			}
-			_discardCardButton.render(spriteBatch);
+			_playCardButton.render(spriteBatch);
 		}
+		_discardCardButton.render(spriteBatch);
 	}
 	private void renderTower(SpriteBatch spriteBatch,BitmapFont font)
 	{
@@ -166,10 +244,9 @@ public class Player
 	}
 	private void renderDiscardPile(SpriteBatch spriteBatch, BitmapFont font)
 	{
-		font.draw(spriteBatch, "Discard Pile ", _discardpilePosition.x, _discardpilePosition.y+320*0.4f);
+		font.draw(spriteBatch, "Discard Pile ", _discardpilePosition.x, _discardpilePosition.y+140);
 		if(_discardPile.size()>0)
 		{
-			_discardPile.get(_discardPile.size()-1).scale = 0.6f;
 			_discardPile.get(_discardPile.size()-1).render(spriteBatch, font, _discardpilePosition);
 		}
 	}
@@ -268,10 +345,12 @@ public class Player
 		{
 			if(_discardCardButton.contains(x, y))
 			{	
-				_discardPile.add(_shownCard);
+				_moveToDiscard = _shownCard;
+				_moveToDiscard.position = _shownCard.position;				
+				_moveToDiscard.scale(0.4f, false);		
+				
 				_hand.remove(_shownCard);
 				_shownCard = null;
-				hasFinishedTurn = true;
 				if(_hand.size()>0)
 				{
 					_touchedCard = _hand.get(0);
@@ -279,11 +358,13 @@ public class Player
 			}
 			else if(_playCardButton.contains(x,y) && _facedownCards.size() <3 && _gold >= _shownCard.GetCost())
 			{
-				_facedownCards.add(_shownCard);
+				_moveToFacedown = _shownCard;
+				_moveToFacedown.position = _shownCard.position;				
+				_moveToFacedown.scale(0.2f, false);				
+				
 				_hand.remove(_shownCard);
 				_gold -=_shownCard.GetCost();
 				_shownCard = null;
-				hasFinishedTurn = true;
 				if(_hand.size()>0)
 				{
 					_touchedCard = _hand.get(0);

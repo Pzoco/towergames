@@ -26,6 +26,9 @@ public class Card
 	public float scale = 1f;
 	public float focusedScale = 1.5f;
 	
+	private float _scaleTarget = -1f;
+	private Boolean _scaleUp = false;
+	
 	
 	public Card(int cost, int rounds, String title, String description)
 	{
@@ -44,9 +47,37 @@ public class Card
 		}
 		return false;
 	}
+	public void scale(float targetScale,Boolean scaleUp)
+	{
+		_scaleTarget = targetScale;
+		_scaleUp = scaleUp;
+		
+	}
 	
+	private void updateScaling()
+	{
+		if(scale >_scaleTarget && !_scaleUp)
+		{
+			scale-=0.1f;
+		}
+		else if(scale <_scaleTarget  && _scaleUp)
+		{
+			scale+=0.1f;
+		}
+		
+		if((scale >=_scaleTarget && _scaleUp) || 
+				(scale <=_scaleTarget  && !_scaleUp))
+		{
+			scale = _scaleTarget;
+			_scaleTarget = -1;
+		}
+	}
 	public void render(SpriteBatch spriteBatch, BitmapFont font,Vector2 position)
-	{		
+	{
+		if(_scaleTarget != -1)
+		{
+			updateScaling();
+		}
 		if(position != null)
 		{
 			this.position = position;
